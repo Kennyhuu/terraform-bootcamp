@@ -97,7 +97,7 @@ resource "aws_security_group" "web_sg" {
     Name = "Terraform-Web-SG"
   }
 }
-
+# Create a key pair for SSH access to the EC2 instance
 
 # 1. Generate a private key using the TLS provider
 resource "tls_private_key" "example" {
@@ -114,18 +114,18 @@ resource "aws_key_pair" "deployer" {
 # 3. Save the private key locally as a .pem file (chmod 400 is recommended afterward)
 resource "local_file" "private_key" {
   content  = tls_private_key.example.private_key_pem
-  filename = "/home/minds-medical/Terraform/terraform-bootcamp/my-aws-key.pem"
+  filename = "{path-to-your-key-file}/my-aws-key.pem"
 }
 
-# Output the key name for reference
+# 4. Output the key name for reference
 output "key_name" {
   value       = aws_key_pair.deployer.key_name
   description = "The name of the AWS Key Pair"
 }
 
-
+# Continue with the EC2 instance creation
 # 2. Create an EC2 instance in the public subnet
-# Ami id from bash = ami-0fd6240f599091088
+# Ami id from bash = ami-0fd6240f599091088 (bash on 15.07.2026)
 resource "aws_instance" "web_instance" {
   ami                    = "ami-0fd6240f599091088"
   instance_type          = "t2.micro"
@@ -141,8 +141,12 @@ resource "aws_instance" "web_instance" {
   }
 }
 
+# Output all the resources created in this lab
 
-# x. Output all the resources created in this lab
+output "hello_world" {
+  value = "Hello, World!"
+}
+
 output "vpc_id" {
   value = aws_vpc.lab_vpc.id
 }
@@ -161,7 +165,9 @@ output "route_table_association_id" {
 output "subnet_id" {
   value = aws_subnet.public_subnet.id
 }
-
-output "hello_world" {
-  value = "Hello, World!"
+output "security_group_id" {
+  value = aws_security_group.web_sg.id
+}
+output "instance_id" {
+  value = aws_instance.web_instance.id
 }
